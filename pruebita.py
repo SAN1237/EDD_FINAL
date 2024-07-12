@@ -11,47 +11,16 @@ dir=input('Ingrese su direccion: ')
 tel=input('Ingrese su telefono: ')
 con=input('Ingrese su contraseña: ')
 
-# cursor.execute('Select * from usuarios')
-# for row in cursor:
-#     print(row)
-
-# NombreCampos=[i[0] for i in cursor.description]
-# print(NombreCampos)
-# print('conexion exitosa')
-
 try:
-    sql="""
-    insert into usuarios (DNI,NOMBRE,APELLIDO,CORREO,DIRECCION,TELEFONO,PASSWORD) values (%s,%s, %s,%s,%s,%s,%s)
-    """
-    cursor.executescript(sql)
+    sql='''insert into usuarios (DNI,NOMBRE,APELLIDO,CORREO,DIRECCION,TELEFONO,PASSWORD) values (%s,%s, %s,%s,%s,%s,%s)'''
+    cursor.execute(sql,(dni,nom,ape,cor,dir,tel,con))
+    #Hacer los cambios a la BD
     connection.commit()
     print('se pudo')
-except:
+except Exception as error:
+    #Volver para atras, deshacer los cambios --> ROLLBACK
     connection.rollback()
-    print('no se pudo')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    print('Se produjo una excepción: {error}')
+    
+cursor.close    
+connection.close
