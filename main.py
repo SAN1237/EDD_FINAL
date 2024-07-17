@@ -1,6 +1,9 @@
 import pymysql
 from tkinter import *
-from tkinter import messagebox
+from tkinter import messagebox, ttk
+from tkinter.font import BOLD
+from PIL import ImageTk, Image
+
 
 try:
     connection=pymysql.connect(host='127.0.0.1',port=3306,user='root',password='Si9HYkqi0ZZ&&&',database='clientes')
@@ -67,7 +70,6 @@ def registrar():
 
    BTenviar=Button(root, text="Enviar", command=enviar)
    BTenviar.grid(row=7,column=1)
-   
 def comprobacion():
     def pasaje(columna): #LOS DATOS LOS RECIBO EN FORMA DE TUPLAS DE TUPLAS PORQUE USÉ FETCHALL(). CON ESTA FUNCION PASO DE ESO A UNA LISTA, CUYOS ELEMENTOS SON LAS FILAS DE LA COLUMNA SELECCIONADA DE MI BASE DE DATOS
         cursor.execute('Select {} from usuarios'.format(columna))
@@ -104,7 +106,6 @@ def comprobacion():
         messagebox.showwarning('Advertencia', 'El usuario no existe')
         #INCLUIR MENSAJE DE QUE EL USUARIO NO EXISTE. DECIR QUE NO EXISTE. 
     return True  
-
 def comprobacion_moderador():
     def enviar():
         contraseña = moderador_password.get()
@@ -124,7 +125,6 @@ def comprobacion_moderador():
     moderador_password = StringVar()
     Entry(root, textvariable=moderador_password, show='*').pack(pady=5)
     Button(root, text="Ingresar", command=enviar).pack(pady=20)
-
 
 ventana=Tk()
 ventana.geometry('400x200')

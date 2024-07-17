@@ -6,7 +6,6 @@ from PIL import ImageTk, Image
 def leer_imagen( path, size): 
         return ImageTk.PhotoImage(Image.open(path).resize(size, Image.Resampling.LANCZOS))  
 
-
 def centrar_ventana(ventana,aplicacion_ancho,aplicacion_largo):    
     pantall_ancho = ventana.winfo_screenwidth()
     pantall_largo = ventana.winfo_screenheight()
@@ -24,7 +23,7 @@ class Login:
         centrar_ventana(self.ventana,800,500) 
        
         # frame para la imagen
-        img = leer_imagen("./Final/imagen1.jpeg",(400,700))
+        img = leer_imagen("./imagenLI.jpg",(400,700))
         frame_imagen = tk.Frame(self.ventana, bd=0, width=400, relief=tk.SOLID, padx=10, pady=10, bg='#fcfcfc')
         frame_imagen.pack(side="left", expand=tk.NO, fill=tk.BOTH)
         label = tk.Label(frame_imagen, image=img)
