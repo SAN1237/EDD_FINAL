@@ -1,7 +1,13 @@
 import pymysql
 from tkinter import *
+from tkinter import messagebox
 
-connection=pymysql.connect(host='127.0.0.1',port=3306,user='root',password='Si9HYkqi0ZZ&&&',database='clientes')
+try:
+    connection=pymysql.connect(host='127.0.0.1',port=3306,user='root',password='Si9HYkqi0ZZ&&&',database='clientes')
+except Exception as er:
+    print('No se pudo establecer conexion: {er}'.format(er))
+    
+cursor=connection.cursor()
 
 def registrar():
    def enviar():
@@ -12,7 +18,8 @@ def registrar():
            cursor.execute(sql,(int(dni.get()),nom.get(),ape.get(),cor.get(),int(tel.get()),con.get()))
            #Hacer los cambios a la BD
            connection.commit()
-           print('Usuario registrado')           
+           print('Usuario registrado')
+           messagebox.showinfo('Registro', 'Usuario registrado correctamente')           
        except Exception as e:
           #Volver para atras, deshacer los cambios --> ROLLBACK
           connection.rollback()
@@ -61,11 +68,70 @@ def registrar():
    BTenviar=Button(root, text="Enviar", command=enviar)
    BTenviar.grid(row=7,column=1)
    
+def comprobacion():
+    def pasaje(columna): #LOS DATOS LOS RECIBO EN FORMA DE TUPLAS DE TUPLAS PORQUE USÉ FETCHALL(). CON ESTA FUNCION PASO DE ESO A UNA LISTA, CUYOS ELEMENTOS SON LAS FILAS DE LA COLUMNA SELECCIONADA DE MI BASE DE DATOS
+        cursor.execute('Select {} from usuarios'.format(columna))
+
+        gen=list(cursor.fetchall())
+
+        for i in range(len(gen)):
+            gen[i]=list(gen[i])
+            gen[i]=gen[i][0]
+
+        print('Datos de la columna seleccionada: ',gen)
+        return gen
+
+    DNIusuario=int(var1.get()) #contiene al dni del usuario
+    contraseña=var2.get() #contiene la contraseña del usuario
+    
+    a=pasaje('DNI') #Lista con los datos en la columna DNI de mi tabla en la base de datos 
+    b=pasaje('PASSWORD')
+    
+    if DNIusuario in a:
+        print('DNI del usuario encontrado')
+        posicion=a.index(DNIusuario)
+        
+        if contraseña==b[posicion]:
+            print('Contraseña correcta')
+            return True            
+        else:
+            print('Contraseña incorrecta')
+            messagebox.showerror('Advertencia', 'Contraseña Incorrecta')
+            #DARLE LA OPORTUNIDAD DE VOLVER A INGRESAR LA CONTRASEÑA
+            #INCLUIR MENSAJE DE QUE LA CONTRASEÑA ESTA MAL EN LA PANTALLA
+    else:
+        print('DNI del Usuario no encontrado')
+        messagebox.showwarning('Advertencia', 'El usuario no existe')
+        #INCLUIR MENSAJE DE QUE EL USUARIO NO EXISTE. DECIR QUE NO EXISTE. 
+    return True  
+
+def comprobacion_moderador():
+    def enviar():
+        contraseña = moderador_password.get()
+        contraseña_correcta = "moderador123"
+
+        if contraseña == contraseña_correcta:
+            messagebox.showinfo('Éxito', 'Login de moderador exitoso')
+        else:
+            messagebox.showerror('Error', 'Contraseña de moderador incorrecta')
+        root.destroy()
+
+    root = Toplevel()
+    root.title('Login Moderador')
+    root.geometry('300x200')
+
+    Label(root, text='Contraseña de Moderador:').pack(pady=10)
+    moderador_password = StringVar()
+    Entry(root, textvariable=moderador_password, show='*').pack(pady=5)
+    Button(root, text="Ingresar", command=enviar).pack(pady=20)
+
+
 ventana=Tk()
 ventana.geometry('400x200')
 ventana.title('Aplicacion')
 
-var=StringVar()
+var1=StringVar()
+var2=StringVar()
 dni=StringVar()
 nom=StringVar()
 ape=StringVar()
@@ -73,22 +139,15 @@ cor=StringVar()
 tel=StringVar()
 con=StringVar()
 
-titulo=Label(ventana, text="NOMBRE DE LA APP")
-subtitulo=Label(ventana, text="slogan")
-Tit_Usuario=Label(ventana, text="Usuario:")
-Barra_Usuario=Entry(ventana,textvariable=var)
-Tit_contraseña=Label(ventana, text="Contraseña:")
-Barra_contraseña=Entry(ventana)
-titulo_registro = Label(ventana, text= "¿no tienes una cuenta?")
-Boton_registro = Button(ventana, text= "registrate", command=registrar)
-
-titulo.pack()
-subtitulo.pack()
-Tit_Usuario.pack()
-Barra_Usuario.pack()
-Tit_contraseña.pack()
-Barra_contraseña.pack()
-titulo_registro.pack()
-Boton_registro.pack()
+Label(ventana, text="NOMBRE DE LA APP").pack()
+Label(ventana, text="slogan").pack()
+Label(ventana, text="DNI:").pack()
+Entry(ventana,textvariable=var1).pack()
+Label(ventana, text="Contraseña:").pack()
+Entry(ventana,textvariable=var2).pack()
+Button(ventana,text='Ingresar',command=comprobacion).pack()
+Label(ventana, text= "¿no tenés una cuenta?").pack()
+Button(ventana, text= "registrate", command=registrar).pack()
+Button(ventana, text="Soy moderador", command=comprobacion_moderador).pack(side=RIGHT)
 
 ventana.mainloop()
